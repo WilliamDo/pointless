@@ -1,0 +1,20 @@
+#pointless-background {
+    //-fx-background-color: radial-gradient(radius 100%, red, darkgray, black);
+    -fx-background-color: linear-gradient(to bottom right, darkblue, aliceblue);
+}
+
+#pointless-exp {
+    -fx-background-color: radial-gradient(center 50% 50%, radius 100%, mediumblue, black);
+}
+
+#bar {
+    -fx-fill: linear-gradient(to right, darkorange, yellow, darkorange);
+}
+
+#barred {
+    -fx-fill: linear-gradient(to right, red, orangered, red);
+}
+
+#bargreen {
+    -fx-fill: linear-gradient(to right, forestgreen, lightgreen, forestgreen);
+}
