@@ -2,8 +2,10 @@ package uk.co.ultimaspin.pointless;
 
 import uk.co.ultimaspin.pointless.quiz.Question;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -25,8 +27,8 @@ public class Quiz {
     private static int x = 0;
 
     public Quiz(List<Question> questions) {
-        this.questionDeck = questions;
-        iterator = questions.iterator();
+        this.questionDeck = randomizeQuestions(questions);
+        iterator = questionDeck.iterator();
     }
 
     public Question nextQuestion() {
@@ -43,6 +45,18 @@ public class Quiz {
 
     public boolean isFinished() {
         return questionDeck.isEmpty();
+    }
+
+    private List<Question> randomizeQuestions(List<Question> questions) {
+        List<Question> result = new ArrayList<Question>();
+
+        while (!questions.isEmpty()) {
+            Random random = new Random();
+            int i = random.nextInt(questions.size());
+            result.add(questions.remove(i));
+        }
+
+        return result;
     }
 
 }
