@@ -124,6 +124,8 @@ public class PointlessApplication extends Application {
     }
 
     public void animate(double end, double animationInterval, double delay) {
+        displayScoreBar(); // Display the score-bar just in case we have it set on question
+
         double start = GAME_START;
 
         double duration = animationInterval * (start - end);
@@ -236,21 +238,24 @@ public class PointlessApplication extends Application {
     }
 
     public void displayQuestion(Question question) {
-        Label label = new Label(question.getQuestion());
-        label.setFont(Font.font("null", FontWeight.BOLD, 48));
-        label.setWrapText(true);
-        label.setMaxWidth(700);
-        label.setStyle("-fx-text-fill: #FFFFFF");
+        if (question != null) {
+            Label label = new Label(question.getQuestion());
+            label.setFont(Font.font("null", FontWeight.BOLD, 48));
+            label.setTextAlignment(TextAlignment.CENTER);
+            label.setWrapText(true);
+            label.setMaxWidth(700);
+            label.setStyle("-fx-text-fill: #FFFFFF");
 
-        FlowPane container = new FlowPane();
-        container.getChildren().add(label);
-        container.setAlignment(Pos.CENTER);
+            FlowPane container = new FlowPane();
+            container.getChildren().add(label);
+            container.setAlignment(Pos.CENTER);
 
-        VBox vBox = new VBox();
-        vBox.getChildren().add(container);
-        vBox.setId("pointless-exp");
-        vBox.setAlignment(Pos.CENTER);
-        borderPane.setCenter(vBox);
+            VBox vBox = new VBox();
+            vBox.getChildren().add(container);
+            vBox.setId("pointless-exp");
+            vBox.setAlignment(Pos.CENTER);
+            borderPane.setCenter(vBox);
+        }
     }
 
     public void displayScoreBar() {

@@ -2,6 +2,7 @@ package uk.co.ultimaspin.pointless;
 
 import uk.co.ultimaspin.pointless.quiz.Question;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -15,6 +16,8 @@ public class Quiz {
 
     private List<Question> questionDeck;
 
+    private Iterator<Question> iterator;
+
     private List<Question> discardedDeck;
 
     private Question currentQuestion;
@@ -23,12 +26,15 @@ public class Quiz {
 
     public Quiz(List<Question> questions) {
         this.questionDeck = questions;
+        iterator = questions.iterator();
     }
 
     public Question nextQuestion() {
-        Question question = questionDeck.iterator().next();
-        this.currentQuestion = question;
-        return question;
+        if (iterator.hasNext()) {
+            Question question = iterator.next();
+            this.currentQuestion = question;
+        }
+        return this.currentQuestion;
     }
 
     public Question currentQuestion() {

@@ -29,31 +29,35 @@ public class Admin {
     final Quiz quiz;
     private final ComboBox<Answer> comboBox;
     private final Label questionLabel;
+    private final Button startButton;
+    private final Button startAnswerButton;
+    private final Slider speedSlider;
+    private final Slider delaySlider;
 
     public Admin(PointlessApplication app) {
         this.quiz = new QuizBuilder().sampleQuiz();
         this.app = app;
 
         // Admin console
-        final Slider slider = new Slider();
-        slider.setMin(0);
-        slider.setMax(500);
-        slider.setValue(300);
-        slider.setShowTickLabels(true);
-        slider.setShowTickMarks(true);
-        slider.setMajorTickUnit(100);
-        slider.setMinorTickCount(50);
+        speedSlider = new Slider();
+        speedSlider.setMin(0);
+        speedSlider.setMax(500);
+        speedSlider.setValue(300);
+        speedSlider.setShowTickLabels(true);
+        speedSlider.setShowTickMarks(true);
+        speedSlider.setMajorTickUnit(100);
+        speedSlider.setMinorTickCount(50);
 
-        final Slider delaySlide = new Slider();
-        delaySlide.setMin(0);
-        delaySlide.setMax(10);
-        delaySlide.setValue(3);
-        delaySlide.setShowTickLabels(true);
-        delaySlide.setShowTickMarks(true);
-        delaySlide.setMajorTickUnit(1);
+        delaySlider = new Slider();
+        delaySlider.setMin(0);
+        delaySlider.setMax(10);
+        delaySlider.setValue(3);
+        delaySlider.setShowTickLabels(true);
+        delaySlider.setShowTickMarks(true);
+        delaySlider.setMajorTickUnit(1);
 //        delaySlide.setMinorTickCount(50);
 
-        final Button startButton = new Button("Start");
+        startButton = new Button("Start");
         startButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -61,8 +65,7 @@ public class Admin {
                 if (validateText()) {
                     double target = Double.parseDouble(textField.getText());
 
-                    Admin.this.app.animate(target, 501 - slider.getValue(), delaySlide.getValue());
-                    startButton.setDisable(true);
+                    startAnimation(target);
                 } else {
                     // TODO How to alert this error
                 }
@@ -73,8 +76,7 @@ public class Admin {
         resetButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                Admin.this.app.reset();
-                startButton.setDisable(false);
+                resetButtons();
             }
         });
 
@@ -107,12 +109,12 @@ public class Admin {
         grid.add(resetButton, 3, 0);
 
         grid.add(new Label("Speed: "), 0, 1);
-        GridPane.setConstraints(slider, 1, 1, 3, 1);
-        grid.add(slider, 1, 1);
+        GridPane.setConstraints(speedSlider, 1, 1, 3, 1);
+        grid.add(speedSlider, 1, 1);
 
         grid.add(new Label("Delay: "), 0, 2);
-        GridPane.setConstraints(delaySlide, 1, 1, 3, 1);
-        grid.add(delaySlide, 1, 2);
+        GridPane.setConstraints(delaySlider, 1, 1, 3, 1);
+        grid.add(delaySlider, 1, 2);
 
         grid.add(new Label("Height: "), 0, 3);
         grid.add(smaller, 1, 3);
@@ -166,26 +168,43 @@ public class Admin {
             }
         });
 
-        Button startAnswerButton = new Button("Choose Answer");
+        startAnswerButton = new Button("Select Answer");
         startAnswerButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
                 int score = getAnswerScore();
-                Admin.this.app.animate(score, 501 - slider.getValue(), delaySlide.getValue());
-                startButton.setDisable(true);
+                startAnimation(score);
             }
         });
 
 
-        grid.add(new Label("Question:"), 0, 5);
+        grid.add(new Label("Question: "), 0, 5);
         questionLabel = new Label();
-        GridPane.setConstraints(questionLabel, 1, 1, 3, 1);
-        grid.add(questionLabel, 1, 5);
+        questionLabel.setMaxWidth(400);
+        questionLabel.setWrapText(true);
 
-        grid.add(questionButton, 2, 6);
-        grid.add(showScoreButton, 3, 6);
-        grid.add(nextQuestionButton, 2, 7);
-        grid.add(startAnswerButton, 3, 7);
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        GridPane.setConstraints(scrollPane, 1, 1, 3, 1);
+        scrollPane.setContent(questionLabel);
+        grid.add(scrollPane, 1, 5);
+
+        grid.add(nextQuestionButton, 3, 6);
+        grid.add(startAnswerButton, 2, 6);
+
+        Button wrongAnswerButton = new Button("Wrong Answer");
+        wrongAnswerButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                startAnimation(100);
+            }
+        });
+        grid.add(wrongAnswerButton, 2, 7);
+
+        grid.add(new Label("Display: "), 0, 8);
+        grid.add(questionButton, 2, 8);
+        grid.add(showScoreButton, 3, 8);
+
 
         comboBox = new ComboBox<Answer>();
         comboBox.setPrefWidth(200);
@@ -205,6 +224,12 @@ public class Admin {
         adminStage.sizeToScene();
         adminStage.show();
 
+    }
+
+    private void startAnimation(double target) {
+        this.app.animate(target, 501 - speedSlider.getValue(), delaySlider.getValue());
+        startButton.setDisable(true);
+        startAnswerButton.setDisable(true);
     }
 
     private boolean validateText() {
@@ -228,6 +253,12 @@ public class Admin {
     private int getAnswerScore() {
         Answer value = comboBox.getValue();
         return value.getScore();
+    }
+
+    private void resetButtons() {
+        Admin.this.app.reset();
+        startButton.setDisable(false);
+        startAnswerButton.setDisable(false);
     }
 
 }
