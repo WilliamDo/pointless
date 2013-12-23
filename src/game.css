@@ -1,6 +1,7 @@
 #pointless-background {
     //-fx-background-color: radial-gradient(radius 100%, red, darkgray, black);
     -fx-background-color: linear-gradient(to bottom right, darkblue, aliceblue);
+    -fx-text-fill: #FFFFFF;
 }
 
 #pointless-exp {

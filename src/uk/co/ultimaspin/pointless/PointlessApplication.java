@@ -26,6 +26,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import uk.co.ultimaspin.pointless.quiz.Question;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -45,7 +46,6 @@ public class PointlessApplication extends Application {
     private static final double INITIAL_BAR_HEIGHT = 450;
 
     private static final double GAME_START = 100;
-    private static final int ANIMATION_INTERVAL = 500;
 
     private final Rectangle rectangle = new Rectangle(100, INITIAL_BAR_HEIGHT);
     private final Rectangle box = new Rectangle(100, INITIAL_BAR_HEIGHT);
@@ -54,6 +54,8 @@ public class PointlessApplication extends Application {
 
     private double currentBarHeight = INITIAL_BAR_HEIGHT;
     private MediaPlayer mediaPlayer;
+
+    private BorderPane borderPane = new BorderPane();
 
 
     public static void main(String[] args) throws URISyntaxException {
@@ -95,7 +97,6 @@ public class PointlessApplication extends Application {
         scoreLabelWrapper.setAlignment(Pos.CENTER);
         scoreLabelWrapper.getChildren().add(scoreLabel);
 
-//        rectangle.setFill(Color.YELLOWGREEN);
         rectangle.setId("bar");
         FlowPane canvas = new FlowPane();
         canvas.getChildren().add(rectangle);
@@ -105,17 +106,12 @@ public class PointlessApplication extends Application {
         StackPane stack = new StackPane();
 
         box.setFill(Color.ALICEBLUE);
-//        Bloom bloom = new Bloom();
-//        bloom.setThreshold(0.9);
-//        scoreBar.setEffect(bloom);
         stack.getChildren().addAll(box, canvas);
         VBox.setMargin(stack, new Insets(0, 0, 50, 0));
         scoreBar.getChildren().addAll(scoreLabelWrapper, stack);
 
         setUpMusic();
 
-        BorderPane borderPane = new BorderPane();
-//        borderPane.setTop(topPane);
         borderPane.setCenter(scoreBar);
 
         Scene scene = new Scene(borderPane, WIDTH, HEIGHT);
@@ -202,15 +198,12 @@ public class PointlessApplication extends Application {
         URL resource = PointlessApplication.class.getClassLoader().getResource("end2.mp3");
         Media endSong = new Media(resource.toString());
         return new MediaPlayer(endSong);
-
     }
 
     private void setUpMusic() {
         URL resource = PointlessApplication.class.getClassLoader().getResource("countdown3.mp3");
         Media media = new Media(resource.toString());
         mediaPlayer = new MediaPlayer(media);
-
-
     }
 
     public void reset() {
@@ -242,6 +235,26 @@ public class PointlessApplication extends Application {
         box.setWidth(box.getWidth() - 25);
     }
 
+    public void displayQuestion(Question question) {
+        Label label = new Label(question.getQuestion());
+        label.setFont(Font.font("null", FontWeight.BOLD, 48));
+        label.setWrapText(true);
+        label.setMaxWidth(700);
+        label.setStyle("-fx-text-fill: #FFFFFF");
 
+        FlowPane container = new FlowPane();
+        container.getChildren().add(label);
+        container.setAlignment(Pos.CENTER);
+
+        VBox vBox = new VBox();
+        vBox.getChildren().add(container);
+        vBox.setId("pointless-exp");
+        vBox.setAlignment(Pos.CENTER);
+        borderPane.setCenter(vBox);
+    }
+
+    public void displayScoreBar() {
+        borderPane.setCenter(scoreBar);
+    }
 
 }

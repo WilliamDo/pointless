@@ -1,6 +1,7 @@
 package uk.co.ultimaspin.pointless;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -9,7 +10,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import uk.co.ultimaspin.pointless.quiz.Answer;
+import uk.co.ultimaspin.pointless.quiz.Question;
 
 /**
  * Created with IntelliJ IDEA.
@@ -22,8 +26,12 @@ public class Admin {
 
     final TextField textField = new TextField();
     final PointlessApplication app;
+    final Quiz quiz;
+    private final ComboBox<Answer> comboBox;
+    private final Label questionLabel;
 
     public Admin(PointlessApplication app) {
+        this.quiz = new QuizBuilder().sampleQuiz();
         this.app = app;
 
         // Admin console
@@ -132,13 +140,68 @@ public class Admin {
         grid.add(wider, 2, 4);
 
 
+        Button questionButton = new Button("Question");
+        questionButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Admin.this.app.displayQuestion(quiz.currentQuestion());
+            }
+        });
+
+        Button showScoreButton = new Button("Bar");
+        showScoreButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Admin.this.app.displayScoreBar();
+            }
+        });
+
+        Button nextQuestionButton = new Button("Next Question");
+        nextQuestionButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Question question = quiz.nextQuestion();
+                updateAnswers(question);
+                Admin.this.app.displayQuestion(question);
+            }
+        });
+
+        Button startAnswerButton = new Button("Choose Answer");
+        startAnswerButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                int score = getAnswerScore();
+                Admin.this.app.animate(score, 501 - slider.getValue(), delaySlide.getValue());
+                startButton.setDisable(true);
+            }
+        });
+
+
+        grid.add(new Label("Question:"), 0, 5);
+        questionLabel = new Label();
+        GridPane.setConstraints(questionLabel, 1, 1, 3, 1);
+        grid.add(questionLabel, 1, 5);
+
+        grid.add(questionButton, 2, 6);
+        grid.add(showScoreButton, 3, 6);
+        grid.add(nextQuestionButton, 2, 7);
+        grid.add(startAnswerButton, 3, 7);
+
+        comboBox = new ComboBox<Answer>();
+        comboBox.setPrefWidth(200);
+        grid.add(comboBox, 1, 6);
+
+
+        VBox vBox = new VBox();
+        vBox.getChildren().add(grid);
+
         FlowPane flowPaneContainer = new FlowPane();
-        flowPaneContainer.getChildren().addAll(grid);
+        flowPaneContainer.getChildren().addAll(vBox);
         flowPaneContainer.setAlignment(Pos.CENTER);
 
         Stage adminStage = new Stage();
         adminStage.setTitle("Quiz Master Control Panel");
-        adminStage.setScene(new Scene(flowPaneContainer, 400, 300));
+        adminStage.setScene(new Scene(flowPaneContainer, 600, 600));
         adminStage.sizeToScene();
         adminStage.show();
 
@@ -154,6 +217,17 @@ public class Admin {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private void updateAnswers(Question question) {
+        ObservableList<Answer> answers = FXCollections.observableArrayList(question.getAnswers());
+        comboBox.setItems(answers);
+        questionLabel.setText(question.getQuestion());
+    }
+
+    private int getAnswerScore() {
+        Answer value = comboBox.getValue();
+        return value.getScore();
     }
 
 }
