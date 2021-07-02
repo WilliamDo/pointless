@@ -9,6 +9,7 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+    id("org.openjfx.javafxplugin") version "0.0.9"
 }
 
 repositories {
@@ -26,7 +27,17 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("com.ultimaspin.pointless.App")
+    mainClass.set("uk.co.ultimaspin.pointless.PointlessApplication")
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+javafx {
+    version = "11.0.2"
+    modules("javafx.controls", "javafx.media")
 }
 
 tasks.test {
